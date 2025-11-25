@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Mail\PasswordResetCodeMail;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -23,7 +26,7 @@ class PasswordResetLinkController extends Controller
     }
 
     /**
-     * Handle an incoming password reset link request.
+     * Handle an incoming password reset code request.
      *
      * @throws \Illuminate\Validation\ValidationException
      */
@@ -33,19 +36,39 @@ class PasswordResetLinkController extends Controller
             'email' => 'required|email',
         ]);
 
-        // We will send the password reset link to this user. Once we have attempted
-        // to send the link, we will examine the response then see the message we
-        // need to show to the user. Finally, we'll send out a proper response.
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
+        // Check if user exists
+        $user = User::where('email', $request->email)->first();
 
-        if ($status == Password::RESET_LINK_SENT) {
-            return back()->with('status', __($status));
+        if (!$user) {
+            throw ValidationException::withMessages([
+                'email' => ['We could not find a user with that email address.'],
+            ]);
         }
 
-        throw ValidationException::withMessages([
-            'email' => [trans($status)],
+        // Generate a 6-digit numeric code
+        $code = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+
+        // Delete any existing password reset tokens for this email
+        DB::table('password_reset_tokens')
+            ->where('email', $request->email)
+            ->delete();
+
+        // Store the code in the password_reset_tokens table
+        DB::table('password_reset_tokens')->insert([
+            'email' => $request->email,
+            'token' => $code,
+            'created_at' => now(),
         ]);
+
+        // Send the code via email
+        try {
+            Mail::to($request->email)->send(new PasswordResetCodeMail($code));
+        } catch (\Exception $e) {
+            throw ValidationException::withMessages([
+                'email' => ['Failed to send password reset code. Please try again.'],
+            ]);
+        }
+
+        return back()->with('status', 'A 6-digit password reset code has been sent to your email address.');
     }
 }
