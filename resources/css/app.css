@@ -1,3 +1,114 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 35 20% 97%;
+    --foreground: 20 15% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 20 15% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 20 15% 15%;
+
+    --primary: 8 65% 45%;
+    --primary-foreground: 35 30% 98%;
+
+    --secondary: 35 35% 85%;
+    --secondary-foreground: 20 15% 15%;
+
+    --muted: 35 20% 92%;
+    --muted-foreground: 20 10% 45%;
+
+    --accent: 40 85% 55%;
+    --accent-foreground: 20 15% 15%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 35 30% 98%;
+
+    --border: 35 20% 88%;
+    --input: 35 20% 88%;
+    --ring: 8 65% 45%;
+
+    --radius: 0.75rem;
+
+    --heritage: 8 75% 38%;
+    --heritage-foreground: 35 30% 98%;
+    
+    --gold: 40 85% 55%;
+    --gold-foreground: 20 15% 15%;
+
+    --gradient-primary: linear-gradient(135deg, hsl(8 65% 45%), hsl(8 75% 38%));
+    --gradient-hero: linear-gradient(135deg, hsl(8 65% 45% / 0.95), hsl(8 75% 38% / 0.9));
+    --gradient-accent: linear-gradient(90deg, hsl(40 85% 55% / 0.15), hsl(8 65% 45% / 0.1));
+
+    --shadow-soft: 0 4px 20px hsl(8 65% 45% / 0.1);
+    --shadow-medium: 0 8px 30px hsl(8 65% 45% / 0.15);
+
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .dark {
+    --background: 20 20% 10%;
+    --foreground: 35 30% 95%;
+
+    --card: 20 20% 12%;
+    --card-foreground: 35 30% 95%;
+
+    --popover: 20 20% 12%;
+    --popover-foreground: 35 30% 95%;
+
+    --primary: 8 70% 55%;
+    --primary-foreground: 20 15% 10%;
+
+    --secondary: 20 15% 20%;
+    --secondary-foreground: 35 30% 95%;
+
+    --muted: 20 15% 18%;
+    --muted-foreground: 35 20% 65%;
+
+    --accent: 40 85% 60%;
+    --accent-foreground: 20 15% 10%;
+
+    --destructive: 0 62.8% 50%;
+    --destructive-foreground: 35 30% 95%;
+
+    --border: 20 15% 22%;
+    --input: 20 15% 22%;
+    --ring: 8 70% 55%;
+
+    --heritage: 8 70% 55%;
+    --heritage-foreground: 20 15% 10%;
+    
+    --gold: 40 85% 60%;
+    --gold-foreground: 20 15% 10%;
+
+    --gradient-primary: linear-gradient(135deg, hsl(8 70% 55%), hsl(8 60% 45%));
+    --gradient-hero: linear-gradient(135deg, hsl(8 70% 55% / 0.9), hsl(8 60% 45% / 0.85));
+    --gradient-accent: linear-gradient(90deg, hsl(40 85% 60% / 0.15), hsl(8 70% 55% / 0.1));
+
+    --shadow-soft: 0 4px 20px hsl(8 70% 55% / 0.2);
+    --shadow-medium: 0 8px 30px hsl(8 70% 55% / 0.25);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
