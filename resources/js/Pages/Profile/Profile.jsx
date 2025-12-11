@@ -37,7 +37,7 @@ const Profile = ({ user, orders = [], tickets = [] }) => {
 
   return (
     <PublicLayout>
-      <main className="flex-1 container mx-auto px-4 py-12 mt-20">
+      <main className="flex-1 container mx-auto px-4 py-12 mt-40">
         <div className="max-w-5xl mx-auto space-y-8">
           {/* Profile Header */}
           <Card className="border-none shadow-lg bg-gradient-to-br from-card to-card/50 backdrop-blur">

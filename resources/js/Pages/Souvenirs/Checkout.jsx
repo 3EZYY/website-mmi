@@ -84,7 +84,7 @@ const Checkout = ({ cart, souvenirs, auth }) => {
 
     return (
         <PublicLayout>
-            <main className="flex-1 pt-20 pb-16 bg-muted/30">
+            <main className="flex-1 pt-40 pb-16 bg-muted/30">
                 <div className="container mx-auto px-6 max-w-4xl">
                     <Button
                         variant="ghost"

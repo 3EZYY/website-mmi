@@ -15,7 +15,7 @@ const OrderSuccess = ({ order }) => {
 
   return (
     <PublicLayout>
-      <main className="flex-1 pt-20 pb-16 bg-muted/30">
+      <main className="flex-1 pt-40 pb-16 bg-muted/30">
         <div className="container mx-auto px-6 max-w-3xl">
           {/* Success Header */}
           <div className="text-center mb-8">

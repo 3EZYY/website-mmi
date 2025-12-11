@@ -90,7 +90,7 @@ const Tickets = ({ auth }) => {
 
   return (
     <PublicLayout>
-      <main className="flex-1 pt-20 pb-16 bg-muted/30">
+      <main className="flex-1 pt-40 pb-16 bg-muted/30">
         <div className="container mx-auto px-6">
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
