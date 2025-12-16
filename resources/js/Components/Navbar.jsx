@@ -27,7 +27,7 @@ const Navbar = () => {
             {},
             {
                 onSuccess: () => {
-                    toast({ title: "Berhasil logout" });
+                    toast({ title: "Berhasil Keluar" });
                 },
             }
         );
@@ -93,7 +93,7 @@ const Navbar = () => {
                                         className={!isScrolled ? "text-white/90 hover:text-white hover:bg-white/10" : ""}
                                     >
                                         <User className="w-4 h-4 mr-2" />
-                                        Profile
+                                        Profil
                                     </Button>
                                 </Link>
                                 <Button
@@ -102,7 +102,7 @@ const Navbar = () => {
                                     onClick={handleLogout}
                                 >
                                     <LogOut className="w-4 h-4 mr-2" />
-                                    Logout
+                                    Keluar
                                 </Button>
                             </div>
                         ) : (
@@ -113,7 +113,7 @@ const Navbar = () => {
                                     as="span"
                                 >
                                     <User className="w-4 h-4 mr-2" />
-                                    Login
+                                    Masuk
                                 </Button>
                             </Link>
                         )}
@@ -179,7 +179,7 @@ const Navbar = () => {
                                         onClick={handleLogout}
                                     >
                                         <LogOut className="w-4 h-4 mr-2" />
-                                        Logout
+                                        Keluar
                                     </Button>
                                 </>
                             ) : (
@@ -190,7 +190,7 @@ const Navbar = () => {
                                         as="span"
                                     >
                                         <User className="w-4 h-4 mr-2" />
-                                        Login
+                                        Masuk
                                     </Button>
                                 </Link>
                             )}

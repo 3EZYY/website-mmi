@@ -83,6 +83,7 @@ class PublicController extends Controller
         $user = Auth::user();
 
         $orders = $user->orders()
+            ->with('orderItems.souvenirs')
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -109,7 +110,7 @@ class PublicController extends Controller
             'visit_date' => 'required|date|after_or_equal:today',
             'quantity' => 'required|integer|min:1|max:50',
             'total_price' => 'required|numeric|min:0',
-            'payment_method' => 'required|string|in:gopay,dana,qris,bca,mandiri,bri',
+            'payment_method' => 'required|string|in:gopay,dana,qris,bca,ovo,shopeepay',
         ]);
 
         // Create ticket record
@@ -153,7 +154,7 @@ class PublicController extends Controller
         $validated = $request->validate([
             'phone' => 'required|string|max:20',
             'shipping_address' => 'required|string|max:500',
-            'payment_method' => 'required|string|in:gopay,dana,qris,bca,mandiri,bri',
+            'payment_method' => 'required|string|in:gopay,dana,qris,bca,ovo,shopeepay',
             'order_items' => 'required|array|min:1',
             'order_items.*.souvenir_id' => 'required|uuid|exists:souvenirs,id',
             'order_items.*.quantity' => 'required|integer|min:1',
@@ -185,5 +186,58 @@ class PublicController extends Controller
         return Inertia::render('Souvenirs/OrderSuccess', [
             'order' => $order
         ]);
+    }
+
+    /**
+     * Delete a pending order
+     */
+    public function deleteOrder(string $id)
+    {
+        $order = \App\Models\Order::where('id', $id)
+            ->where('user_id', Auth::id())
+            ->where('status', 'pending')
+            ->firstOrFail();
+
+        // Delete order items first
+        $order->orderItems()->delete();
+
+        // Delete the order
+        $order->delete();
+
+        return redirect()->route('profile')->with('success', 'Pesanan berhasil dihapus');
+    }
+
+    /**
+     * Update user avatar
+     */
+    public function updateAvatar(Request $request)
+    {
+        $request->validate([
+            'avatar' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:200', // max 200KB
+        ], [
+            'avatar.max' => 'Ukuran foto maksimal 200 KB',
+            'avatar.image' => 'File harus berupa gambar',
+            'avatar.mimes' => 'Format gambar harus jpeg, png, jpg, gif, atau webp',
+        ]);
+
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        // Delete old avatar if exists and is not a URL (external avatar)
+        if ($user->avatar && !filter_var($user->avatar, FILTER_VALIDATE_URL)) {
+            $oldPath = public_path('storage/' . $user->avatar);
+            if (file_exists($oldPath)) {
+                unlink($oldPath);
+            }
+        }
+
+        // Store new avatar
+        $path = $request->file('avatar')->store('avatars', 'public');
+
+        // Update user avatar
+        $user->avatar = $path;
+        $user->save();
+
+        return redirect()->route('profile')->with('success', 'Foto profil berhasil diperbarui');
     }
 }

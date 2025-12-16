@@ -19,12 +19,12 @@ const ticketSchema = z.object({
 });
 
 const paymentMethods = [
-  { id: "gopay", name: "GoPay", icon: "💚" },
-  { id: "dana", name: "DANA", icon: "💙" },
-  { id: "qris", name: "QRIS", icon: "📱" },
-  { id: "bca", name: "BCA", icon: "🏦" },
-  { id: "mandiri", name: "Mandiri", icon: "🏦" },
-  { id: "bri", name: "BRI", icon: "🏦" },
+  { id: "gopay", name: "GoPay", icon: "/icon-payment/Pesen tiket/gopay.webp" },
+  { id: "dana", name: "DANA", icon: "/icon-payment/Pesen tiket/dana.webp" },
+  { id: "qris", name: "QRIS", icon: "/icon-payment/Pesen tiket/Qris.webp" },
+  { id: "bca", name: "BCA", icon: "/icon-payment/Pesen tiket/BCa.webp" },
+  { id: "ovo", name: "OVO", icon: "/icon-payment/Pesen tiket/ovo.webp" },
+  { id: "shopeepay", name: "ShopeePay", icon: "/icon-payment/Pesen tiket/shopee.webp" },
 ];
 
 const Tickets = ({ auth }) => {
@@ -39,7 +39,7 @@ const Tickets = ({ auth }) => {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
-  const TICKET_PRICE = 5000;
+  const TICKET_PRICE = 10000;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -90,7 +90,11 @@ const Tickets = ({ auth }) => {
 
   return (
     <PublicLayout>
+<<<<<<< HEAD
       <main className="flex-1 pt-40 pb-16 bg-muted/30">
+=======
+      <main className="flex-1 pt-32 pb-16 bg-muted/30">
+>>>>>>> feature/3-homepage-layout
         <div className="container mx-auto px-6">
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
@@ -98,6 +102,9 @@ const Tickets = ({ auth }) => {
             </h1>
             <p className="text-lg text-muted-foreground">
               Harga tiket: Rp {TICKET_PRICE.toLocaleString()} per orang
+            </p>
+            <p className="text-sm text-muted-foreground mt-2">
+              🕐 Jam Operasional: Setiap hari, 10:00 - 17:00 WIB
             </p>
           </div>
 
@@ -190,8 +197,8 @@ const Tickets = ({ auth }) => {
                         }`}
                       >
                         <div className="flex flex-col items-center gap-2">
-                          <span className="text-2xl">{method.icon}</span>
-                          <span className="text-sm font-medium">{method.name}</span>
+                          <img src={method.icon} alt={method.name} className="w-26 h-26 object-contain" />
+                          <span className="text-xs font-medium">{method.name}</span>
                         </div>
                       </button>
                     ))}
