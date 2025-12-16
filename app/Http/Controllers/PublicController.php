@@ -109,7 +109,7 @@ class PublicController extends Controller
             'visit_date' => 'required|date|after_or_equal:today',
             'quantity' => 'required|integer|min:1|max:50',
             'total_price' => 'required|numeric|min:0',
-            'payment_method' => 'required|string|in:gopay,dana,qris,bca,mandiri,bri',
+            'payment_method' => 'required|string|in:gopay,dana,qris,bca,ovo,shopeepay',
         ]);
 
         // Create ticket record
@@ -153,7 +153,7 @@ class PublicController extends Controller
         $validated = $request->validate([
             'phone' => 'required|string|max:20',
             'shipping_address' => 'required|string|max:500',
-            'payment_method' => 'required|string|in:gopay,dana,qris,bca,mandiri,bri',
+            'payment_method' => 'required|string|in:gopay,dana,qris,bca,ovo,shopeepay',
             'order_items' => 'required|array|min:1',
             'order_items.*.souvenir_id' => 'required|uuid|exists:souvenirs,id',
             'order_items.*.quantity' => 'required|integer|min:1',

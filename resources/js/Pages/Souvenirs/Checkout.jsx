@@ -84,7 +84,7 @@ const Checkout = ({ cart, souvenirs, auth }) => {
 
     return (
         <PublicLayout>
-            <main className="flex-1 pt-20 pb-16 bg-muted/30">
+            <main className="flex-1 pt-32 pb-16 bg-muted/30">
                 <div className="container mx-auto px-6 max-w-4xl">
                     <Button
                         variant="ghost"
@@ -227,179 +227,43 @@ const Checkout = ({ cart, souvenirs, auth }) => {
                                         Metode Pembayaran
                                     </Label>
                                     <div className="grid grid-cols-2 gap-3 mt-3">
-                                        {/* QRIS */}
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                setPaymentMethod("qris")
-                                            }
-                                            className={`w-full p-4 rounded-lg border-2 transition-all text-left ${
-                                                paymentMethod === "qris"
-                                                    ? "border-primary bg-primary/10"
-                                                    : "border-border bg-card hover:border-primary/50"
-                                            }`}
-                                        >
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-12 h-12 bg-gradient-accent rounded-lg flex items-center justify-center flex-shrink-0">
-                                                    <span className="text-2xl">
-                                                        📱
-                                                    </span>
+                                        {[
+                                            { id: "qris", name: "QRIS", desc: "Scan & Pay", icon: "/icon-payment/checkout/QRIS.webp" },
+                                            { id: "bca", name: "BCA", desc: "Virtual Account", icon: "/icon-payment/checkout/bca.webp" },
+                                            { id: "gopay", name: "GoPay", desc: "E-Wallet", icon: "/icon-payment/checkout/gopay (1).webp" },
+                                            { id: "ovo", name: "OVO", desc: "E-Wallet", icon: "/icon-payment/checkout/ovo.webp" },
+                                            { id: "dana", name: "DANA", desc: "E-Wallet", icon: "/icon-payment/checkout/dana.webp" },
+                                            { id: "shopeepay", name: "ShopeePay", desc: "E-Wallet", icon: "/icon-payment/checkout/shopeepay.webp" },
+                                        ].map((method) => (
+                                            <button
+                                                key={method.id}
+                                                type="button"
+                                                onClick={() => setPaymentMethod(method.id)}
+                                                className={`w-full p-4 rounded-lg border-2 transition-all text-left ${
+                                                    paymentMethod === method.id
+                                                        ? "border-primary bg-primary/10"
+                                                        : "border-border bg-card hover:border-primary/50"
+                                                }`}
+                                            >
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-14 h-14 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
+                                                        <img 
+                                                            src={method.icon} 
+                                                            alt={method.name} 
+                                                            className="w-full h-full object-contain"
+                                                        />
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <p className="text-sm font-semibold text-foreground">
+                                                            {method.name}
+                                                        </p>
+                                                        <p className="text-xs text-muted-foreground">
+                                                            {method.desc}
+                                                        </p>
+                                                    </div>
                                                 </div>
-                                                <div className="flex-1">
-                                                    <p className="font-semibold text-foreground">
-                                                        QRIS
-                                                    </p>
-                                                    <p className="text-sm text-muted-foreground">
-                                                        Scan & Pay
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </button>
-
-                                        {/* BCA Virtual Account */}
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                setPaymentMethod("bca")
-                                            }
-                                            className={`w-full p-4 rounded-lg border-2 transition-all text-left ${
-                                                paymentMethod === "bca"
-                                                    ? "border-primary bg-primary/10"
-                                                    : "border-border bg-card hover:border-primary/50"
-                                            }`}
-                                        >
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-12 h-12 bg-gradient-accent rounded-lg flex items-center justify-center flex-shrink-0">
-                                                    <span className="text-2xl">
-                                                        🏦
-                                                    </span>
-                                                </div>
-                                                <div className="flex-1">
-                                                    <p className="font-semibold text-foreground">
-                                                        BCA
-                                                    </p>
-                                                    <p className="text-sm text-muted-foreground">
-                                                        Virtual Account
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </button>
-
-                                        {/* Mandiri Virtual Account */}
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                setPaymentMethod("mandiri")
-                                            }
-                                            className={`w-full p-4 rounded-lg border-2 transition-all text-left ${
-                                                paymentMethod === "mandiri"
-                                                    ? "border-primary bg-primary/10"
-                                                    : "border-border bg-card hover:border-primary/50"
-                                            }`}
-                                        >
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-12 h-12 bg-gradient-accent rounded-lg flex items-center justify-center flex-shrink-0">
-                                                    <span className="text-2xl">
-                                                        🏦
-                                                    </span>
-                                                </div>
-                                                <div className="flex-1">
-                                                    <p className="font-semibold text-foreground">
-                                                        Mandiri
-                                                    </p>
-                                                    <p className="text-sm text-muted-foreground">
-                                                        Virtual Account
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </button>
-
-                                        {/* GoPay */}
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                setPaymentMethod("gopay")
-                                            }
-                                            className={`w-full p-4 rounded-lg border-2 transition-all text-left ${
-                                                paymentMethod === "gopay"
-                                                    ? "border-primary bg-primary/10"
-                                                    : "border-border bg-card hover:border-primary/50"
-                                            }`}
-                                        >
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-12 h-12 bg-gradient-accent rounded-lg flex items-center justify-center flex-shrink-0">
-                                                    <span className="text-2xl">
-                                                        💚
-                                                    </span>
-                                                </div>
-                                                <div className="flex-1">
-                                                    <p className="font-semibold text-foreground">
-                                                        GoPay
-                                                    </p>
-                                                    <p className="text-sm text-muted-foreground">
-                                                        E-wallet
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </button>
-
-                                        {/* OVO */}
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                setPaymentMethod("ovo")
-                                            }
-                                            className={`w-full p-4 rounded-lg border-2 transition-all text-left ${
-                                                paymentMethod === "ovo"
-                                                    ? "border-primary bg-primary/10"
-                                                    : "border-border bg-card hover:border-primary/50"
-                                            }`}
-                                        >
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-12 h-12 bg-gradient-accent rounded-lg flex items-center justify-center flex-shrink-0">
-                                                    <span className="text-2xl">
-                                                        💜
-                                                    </span>
-                                                </div>
-                                                <div className="flex-1">
-                                                    <p className="font-semibold text-foreground">
-                                                        OVO
-                                                    </p>
-                                                    <p className="text-sm text-muted-foreground">
-                                                        E-wallet
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </button>
-
-                                        {/* DANA */}
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                setPaymentMethod("dana")
-                                            }
-                                            className={`w-full p-4 rounded-lg border-2 transition-all text-left ${
-                                                paymentMethod === "dana"
-                                                    ? "border-primary bg-primary/10"
-                                                    : "border-border bg-card hover:border-primary/50"
-                                            }`}
-                                        >
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-12 h-12 bg-gradient-accent rounded-lg flex items-center justify-center flex-shrink-0">
-                                                    <span className="text-2xl">
-                                                        💙
-                                                    </span>
-                                                </div>
-                                                <div className="flex-1">
-                                                    <p className="font-semibold text-foreground">
-                                                        DANA
-                                                    </p>
-                                                    <p className="text-sm text-muted-foreground">
-                                                        E-wallet
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </button>
+                                            </button>
+                                        ))}
                                     </div>
                                 </div>
 
