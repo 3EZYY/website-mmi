@@ -83,6 +83,7 @@ class PublicController extends Controller
         $user = Auth::user();
 
         $orders = $user->orders()
+            ->with('orderItems.souvenirs')
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -185,5 +186,24 @@ class PublicController extends Controller
         return Inertia::render('Souvenirs/OrderSuccess', [
             'order' => $order
         ]);
+    }
+
+    /**
+     * Delete a pending order
+     */
+    public function deleteOrder(string $id)
+    {
+        $order = \App\Models\Order::where('id', $id)
+            ->where('user_id', Auth::id())
+            ->where('status', 'pending')
+            ->firstOrFail();
+
+        // Delete order items first
+        $order->orderItems()->delete();
+
+        // Delete the order
+        $order->delete();
+
+        return redirect()->route('profile')->with('success', 'Pesanan berhasil dihapus');
     }
 }

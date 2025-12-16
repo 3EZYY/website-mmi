@@ -40,10 +40,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::delete('/orders/{order}', [PublicController::class, 'deleteOrder'])->name('orders.delete');
 });
 
 // Google OAuth Routes
 Route::get('/auth/google', [SocialAuthController::class, 'redirect'])->name('auth.google');
 Route::get('/auth/google/callback', [SocialAuthController::class, 'callback'])->name('auth.google.callback');
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { LogOut, Mail, Calendar, Package, Ticket } from "lucide-react";
+import { LogOut, Mail, Calendar, Package, Ticket, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import PublicLayout from "@/Layouts/PublicLayout";
 
@@ -23,14 +23,51 @@ const Profile = ({ user, orders = [], tickets = [] }) => {
     });
   };
 
+  const handleDeleteOrder = (orderId) => {
+    if (confirm("Apakah Anda yakin ingin menghapus pesanan ini?")) {
+      router.delete(`/orders/${orderId}`, {
+        onSuccess: () => {
+          toast({
+            title: "Pesanan Dihapus",
+            description: "Pesanan berhasil dihapus",
+          });
+        },
+        onError: () => {
+          toast({
+            title: "Error",
+            description: "Gagal menghapus pesanan",
+            variant: "destructive",
+          });
+        }
+      });
+    }
+  };
+
   const getStatusBadge = (status) => {
-    const variants = {
-      pending: "secondary",
-      paid: "default",
-      completed: "default",
-      cancelled: "destructive",
+    const statusConfig = {
+      pending: {
+        label: "Menunggu",
+        className: "bg-amber-100 text-amber-800 hover:bg-amber-100"
+      },
+      paid: {
+        label: "Dibayar",
+        className: "bg-emerald-100 text-emerald-700 hover:bg-emerald-100"
+      },
+      completed: {
+        label: "Selesai",
+        className: "bg-emerald-100 text-emerald-700 hover:bg-emerald-100"
+      },
+      confirmed: {
+        label: "Selesai",
+        className: "bg-emerald-100 text-emerald-700 hover:bg-emerald-100"
+      },
+      cancelled: {
+        label: "Dibatalkan",
+        className: "bg-red-100 text-red-700 hover:bg-red-100"
+      },
     };
-    return <Badge variant={variants[status] || "outline"}>{status}</Badge>;
+    const config = statusConfig[status] || { label: status, className: "" };
+    return <Badge className={config.className}>{config.label}</Badge>;
   };
 
   const userInitials = user?.email?.substring(0, 2).toUpperCase() || "U";
@@ -52,7 +89,7 @@ const Profile = ({ user, orders = [], tickets = [] }) => {
                 <div className="flex-1 space-y-3">
                   <div>
                     <CardTitle className="text-3xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-                      My Profile
+                      Profil Saya
                     </CardTitle>
                     <CardDescription className="flex items-center gap-2 mt-2 text-base">
                       <Mail className="h-4 w-4" />
@@ -70,7 +107,7 @@ const Profile = ({ user, orders = [], tickets = [] }) => {
                 </div>
                 <Button variant="outline" onClick={handleSignOut} className="md:self-start">
                   <LogOut className="h-4 w-4 mr-2" />
-                  Sign Out
+                  Keluar
                 </Button>
               </div>
             </CardHeader>
@@ -81,13 +118,13 @@ const Profile = ({ user, orders = [], tickets = [] }) => {
             <TabsList className="grid w-full grid-cols-2 h-auto p-1 bg-muted/50">
               <TabsTrigger value="orders" className="py-3 data-[state=active]:shadow-md">
                 <Package className="h-4 w-4 mr-2" />
-                <span className="hidden sm:inline">Souvenir Orders</span>
+                <span className="hidden sm:inline">Pesanan Souvenir</span>
                 <span className="sm:hidden">Orders</span>
                 <Badge variant="secondary" className="ml-2">{orders.length}</Badge>
               </TabsTrigger>
               <TabsTrigger value="tickets" className="py-3 data-[state=active]:shadow-md">
                 <Ticket className="h-4 w-4 mr-2" />
-                <span className="hidden sm:inline">Ticket Bookings</span>
+                <span className="hidden sm:inline">Pesan Tiket</span>
                 <span className="sm:hidden">Tickets</span>
                 <Badge variant="secondary" className="ml-2">{tickets.length}</Badge>
               </TabsTrigger>
@@ -98,12 +135,12 @@ const Profile = ({ user, orders = [], tickets = [] }) => {
                 <Card className="border-dashed border-2">
                   <CardContent className="py-16 text-center">
                     <Package className="h-16 w-16 mx-auto mb-4 text-muted-foreground/50" />
-                    <CardTitle className="mb-2">No Orders Yet</CardTitle>
+                    <CardTitle className="mb-2">Belum ada pesanan</CardTitle>
                     <CardDescription className="mb-4">
-                      Visit our souvenir shop to make your first purchase!
+                      Kunjungi toko souvenir kami untuk membuat pembelian pertama Anda!
                     </CardDescription>
                     <Button onClick={() => router.visit("/souvenirs")}>
-                      Browse Souvenirs
+                      Beli Souvenir
                     </Button>
                   </CardContent>
                 </Card>
@@ -141,10 +178,54 @@ const Profile = ({ user, orders = [], tickets = [] }) => {
                           </div>
                         </div>
                         <Separator />
+                        
+                        {/* Order Items Detail */}
+                        {order.order_items && order.order_items.length > 0 && (
+                          <div className="space-y-2">
+                            <span className="text-xs font-medium text-muted-foreground uppercase">Item Pesanan</span>
+                            <div className="space-y-2">
+                              {order.order_items.map((item, index) => (
+                                <div key={index} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                                  <div className="flex items-center gap-3">
+                                    {item.souvenirs?.image_url && (
+                                      <img 
+                                        src={item.souvenirs.image_url} 
+                                        alt={item.souvenirs?.name} 
+                                        className="w-12 h-12 object-cover rounded"
+                                      />
+                                    )}
+                                    <div>
+                                      <p className="text-sm font-medium">{item.souvenirs?.name || 'Item'}</p>
+                                      <p className="text-xs text-muted-foreground">Qty: {item.quantity}</p>
+                                    </div>
+                                  </div>
+                                  <p className="text-sm font-semibold">Rp {(item.price * item.quantity).toLocaleString('id-ID')}</p>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        
+                        <Separator />
                         <div className="space-y-1">
-                          <span className="text-xs font-medium text-muted-foreground uppercase">Shipping Address</span>
+                          <span className="text-xs font-medium text-muted-foreground uppercase">Alamat Pengiriman</span>
                           <p className="text-sm leading-relaxed">{order.shipping_address}</p>
                         </div>
+                        
+                        {/* Delete Button for Pending Orders */}
+                        {order.status === 'pending' && (
+                          <div className="pt-2">
+                            <Button 
+                              variant="destructive" 
+                              size="sm"
+                              onClick={() => handleDeleteOrder(order.id)}
+                              className="w-full sm:w-auto"
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Hapus Pesanan
+                            </Button>
+                          </div>
+                        )}
                       </CardContent>
                     </Card>
                   ))}
@@ -157,12 +238,12 @@ const Profile = ({ user, orders = [], tickets = [] }) => {
                 <Card className="border-dashed border-2">
                   <CardContent className="py-16 text-center">
                     <Ticket className="h-16 w-16 mx-auto mb-4 text-muted-foreground/50" />
-                    <CardTitle className="mb-2">No Ticket Bookings Yet</CardTitle>
+                    <CardTitle className="mb-2">Belum ada pemesanan tiket</CardTitle>
                     <CardDescription className="mb-4">
-                      Book your visit to the museum today!
+                      Booking tiket museum hari ini!
                     </CardDescription>
                     <Button onClick={() => router.visit("/tickets")}>
-                      Book Tickets
+                      Booking Tiket
                     </Button>
                   </CardContent>
                 </Card>

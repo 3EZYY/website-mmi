@@ -99,6 +99,9 @@ const Tickets = ({ auth }) => {
             <p className="text-lg text-muted-foreground">
               Harga tiket: Rp {TICKET_PRICE.toLocaleString()} per orang
             </p>
+            <p className="text-sm text-muted-foreground mt-2">
+              🕐 Jam Operasional: Setiap hari, 10:00 - 17:00 WIB
+            </p>
           </div>
 
           <div className="max-w-2xl mx-auto">
