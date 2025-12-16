@@ -31,10 +31,6 @@ Route::get('/souvenirs', [PublicController::class, 'souvenirs'])->name('souvenir
 Route::get('/checkout', [PublicController::class, 'checkout'])->name('checkout');
 Route::post('/checkout', [PublicController::class, 'processCheckout'])->name('checkout.process');
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [PublicController::class, 'profile'])->name('profile');
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -46,4 +42,4 @@ Route::middleware('auth')->group(function () {
 Route::get('/auth/google', [SocialAuthController::class, 'redirect'])->name('auth.google');
 Route::get('/auth/google/callback', [SocialAuthController::class, 'callback'])->name('auth.google.callback');
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

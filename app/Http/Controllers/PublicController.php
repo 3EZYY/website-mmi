@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
+use Midtrans\Config;
+use Midtrans\Snap;
 
 class PublicController extends Controller
 {
@@ -181,9 +183,37 @@ class PublicController extends Controller
                 'price' => $item['price'],
             ]);
         }
+
+        // Configure Midtrans
+        Config::$serverKey = config('midtrans.server_key');
+        Config::$isProduction = config('midtrans.is_production');
+        Config::$isSanitized = config('midtrans.is_sanitized');
+        Config::$is3ds = config('midtrans.is_3ds');
+
+        // Create transaction params for Midtrans
+        $params = [
+            'transaction_details' => [
+                'order_id' => $order->id,
+                'gross_amount' => (int) $validated['total_amount'],
+            ],
+            'customer_details' => [
+                'email' => Auth::user()->email,
+                'phone' => $validated['phone'],
+            ],
+        ];
+
+        // Generate Snap Token
+        $snapToken = Snap::getSnapToken($params);
+
+        // Save snap token to order
+        $order->snap_token = $snapToken;
+        $order->save();
+
         $order->load('orderItems.souvenirs');
+
         return Inertia::render('Souvenirs/OrderSuccess', [
-            'order' => $order
+            'order' => $order,
+            'clientKey' => config('midtrans.client_key'),
         ]);
     }
 }

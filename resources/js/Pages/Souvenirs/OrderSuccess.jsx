@@ -2,10 +2,14 @@ import { useState, useEffect } from "react";
 import { router } from "@inertiajs/react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { CheckCircle2, MapPin, Phone, Calendar, Package } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { CheckCircle2, MapPin, Phone, Calendar, Package, CreditCard } from "lucide-react";
 import PublicLayout from "@/Layouts/PublicLayout";
 
-const OrderSuccess = ({ order }) => {
+const OrderSuccess = ({ order, clientKey }) => {
+  const { toast } = useToast();
+  const [isPaymentLoading, setIsPaymentLoading] = useState(false);
+
   if (!order) {
     useEffect(() => {
       router.visit("/souvenirs");
@@ -13,9 +17,51 @@ const OrderSuccess = ({ order }) => {
     return null;
   }
 
+  const handlePayment = () => {
+    if (!order.snap_token) {
+      toast({
+        title: "Error",
+        description: "Token pembayaran tidak ditemukan",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsPaymentLoading(true);
+
+    window.snap.pay(order.snap_token, {
+      onSuccess: function(result) {
+        toast({
+          title: "Pembayaran Berhasil!",
+          description: "Terima kasih, pesanan Anda sedang diproses.",
+        });
+        // Reload to get updated order status
+        router.reload();
+      },
+      onPending: function(result) {
+        toast({
+          title: "Menunggu Pembayaran",
+          description: "Silakan selesaikan pembayaran Anda.",
+        });
+        setIsPaymentLoading(false);
+      },
+      onError: function(result) {
+        toast({
+          title: "Pembayaran Gagal",
+          description: "Silakan coba lagi atau pilih metode pembayaran lain.",
+          variant: "destructive",
+        });
+        setIsPaymentLoading(false);
+      },
+      onClose: function() {
+        setIsPaymentLoading(false);
+      }
+    });
+  };
+
   return (
     <PublicLayout>
-      <main className="flex-1 pt-20 pb-16 bg-muted/30">
+      <main className="flex-1 pt-40 pb-16 bg-muted/30">
         <div className="container mx-auto px-6 max-w-3xl">
           {/* Success Header */}
           <div className="text-center mb-8">
@@ -37,8 +83,15 @@ const OrderSuccess = ({ order }) => {
               </div>
               <div className="text-right">
                 <p className="text-sm text-muted-foreground mb-1">Status</p>
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">
-                  {order.status === "pending" ? "Menunggu Pembayaran" : order.status}
+                <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                  order.status === "pending" 
+                    ? "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400"
+                    : order.status === "paid"
+                    ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
+                    : "bg-muted text-muted-foreground"
+                }`}>
+                  {order.status === "pending" ? "Menunggu Pembayaran" : 
+                   order.status === "paid" ? "Sudah Dibayar" : order.status}
                 </span>
               </div>
             </div>
@@ -123,8 +176,20 @@ const OrderSuccess = ({ order }) => {
 
           {/* Actions */}
           <div className="flex flex-col sm:flex-row gap-4">
+            {order.status === "pending" && order.snap_token && (
+              <Button
+                variant="heritage"
+                size="lg"
+                className="flex-1"
+                onClick={handlePayment}
+                disabled={isPaymentLoading}
+              >
+                <CreditCard className="w-4 h-4 mr-2" />
+                {isPaymentLoading ? "Memproses..." : "Bayar Sekarang"}
+              </Button>
+            )}
             <Button
-              variant="heritage"
+              variant={order.status === "pending" ? "outline" : "heritage"}
               size="lg"
               className="flex-1"
               onClick={() => router.visit("/souvenirs")}
