@@ -206,4 +206,38 @@ class PublicController extends Controller
 
         return redirect()->route('profile')->with('success', 'Pesanan berhasil dihapus');
     }
+
+    /**
+     * Update user avatar
+     */
+    public function updateAvatar(Request $request)
+    {
+        $request->validate([
+            'avatar' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:200', // max 200KB
+        ], [
+            'avatar.max' => 'Ukuran foto maksimal 200 KB',
+            'avatar.image' => 'File harus berupa gambar',
+            'avatar.mimes' => 'Format gambar harus jpeg, png, jpg, gif, atau webp',
+        ]);
+
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        // Delete old avatar if exists and is not a URL (external avatar)
+        if ($user->avatar && !filter_var($user->avatar, FILTER_VALIDATE_URL)) {
+            $oldPath = public_path('storage/' . $user->avatar);
+            if (file_exists($oldPath)) {
+                unlink($oldPath);
+            }
+        }
+
+        // Store new avatar
+        $path = $request->file('avatar')->store('avatars', 'public');
+
+        // Update user avatar
+        $user->avatar = $path;
+        $user->save();
+
+        return redirect()->route('profile')->with('success', 'Foto profil berhasil diperbarui');
+    }
 }

@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { router } from "@inertiajs/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -5,12 +6,21 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { LogOut, Mail, Calendar, Package, Ticket, Trash2 } from "lucide-react";
+import { LogOut, Mail, Calendar, Package, Ticket, Trash2, Camera } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import PublicLayout from "@/Layouts/PublicLayout";
 
 const Profile = ({ user, orders = [], tickets = [] }) => {
   const { toast } = useToast();
+  const fileInputRef = useRef(null);
+
+  const getAvatarUrl = () => {
+    if (!user?.avatar) return null;
+    // If it's already a full URL (Google avatar), return as is
+    if (user.avatar.startsWith('http')) return user.avatar;
+    // Otherwise, it's a local path, prepend storage URL
+    return `/storage/${user.avatar}`;
+  };
 
   const handleSignOut = () => {
     router.post("/logout", {}, {
@@ -41,6 +51,52 @@ const Profile = ({ user, orders = [], tickets = [] }) => {
         }
       });
     }
+  };
+
+  const handleAvatarUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file size (200KB max)
+    if (file.size > 200 * 1024) {
+      toast({
+        title: "Error",
+        description: "Ukuran foto maksimal 200 KB",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate file type
+    const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp'];
+    if (!validTypes.includes(file.type)) {
+      toast({
+        title: "Error",
+        description: "Format gambar harus jpeg, png, jpg, gif, atau webp",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Upload via Inertia
+    router.post('/profile/avatar', {
+      avatar: file,
+    }, {
+      forceFormData: true,
+      onSuccess: () => {
+        toast({
+          title: "Berhasil",
+          description: "Foto profil berhasil diperbarui",
+        });
+      },
+      onError: (errors) => {
+        toast({
+          title: "Error",
+          description: errors.avatar || "Gagal mengupload foto",
+          variant: "destructive",
+        });
+      }
+    });
   };
 
   const getStatusBadge = (status) => {
@@ -80,12 +136,28 @@ const Profile = ({ user, orders = [], tickets = [] }) => {
           <Card className="border-none shadow-lg bg-gradient-to-br from-card to-card/50 backdrop-blur">
             <CardHeader className="pb-4">
               <div className="flex flex-col md:flex-row md:items-center gap-6">
+              <div className="relative group">
                 <Avatar className="h-24 w-24 border-4 border-primary/20 shadow-xl">
-                  <AvatarImage src={user?.avatar_url} />
+                  <AvatarImage src={getAvatarUrl()} />
                   <AvatarFallback className="text-2xl font-bold bg-gradient-to-br from-primary to-primary/60">
                     {userInitials}
                   </AvatarFallback>
                 </Avatar>
+                {/* Upload overlay */}
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                >
+                  <Camera className="h-6 w-6 text-white" />
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/jpg,image/gif,image/webp"
+                  onChange={handleAvatarUpload}
+                  className="hidden"
+                />
+              </div>
                 <div className="flex-1 space-y-3">
                   <div>
                     <CardTitle className="text-3xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
