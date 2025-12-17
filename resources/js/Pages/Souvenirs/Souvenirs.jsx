@@ -55,11 +55,7 @@ const Souvenirs = ({ souvenirs = [], auth }) => {
 
   return (
     <PublicLayout>
-<<<<<<< HEAD
-      <main className="flex-1 pt-40 pb-16 bg-gradient-to-br from-muted/30 via-background to-muted/20">
-=======
       <main className="flex-1 pt-32 pb-16 bg-gradient-to-br from-muted/30 via-background to-muted/20">
->>>>>>> feature/3-homepage-layout
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h1 className="text-5xl md:text-6xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-6">
