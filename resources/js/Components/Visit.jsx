@@ -26,7 +26,7 @@ const Visit = () => {
       icon: Ticket,
       title: "Harga Tiket",
       details: [
-        "Rp 5.000 / orang",
+        "Rp 10.000 / orang",
         "Harga Terjangkau",
         "Untuk Semua Kalangan",
       ],

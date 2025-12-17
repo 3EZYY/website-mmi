@@ -39,7 +39,7 @@ const Tickets = ({ auth }) => {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
-  const TICKET_PRICE = 5000;
+  const TICKET_PRICE = 10000;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
