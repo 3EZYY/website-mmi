@@ -1,17 +1,62 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { router } from "@inertiajs/react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { CheckCircle2, User, Mail, Phone, Calendar, Ticket } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { CheckCircle2, User, Mail, Phone, Calendar, Ticket, CreditCard } from "lucide-react";
 import PublicLayout from "@/Layouts/PublicLayout";
 
-const TicketSuccess = ({ ticket }) => {
+const TicketSuccess = ({ ticket, clientKey }) => {
+  const { toast } = useToast();
+  const [isPaymentLoading, setIsPaymentLoading] = useState(false);
+
   if (!ticket) {
     useEffect(() => {
       router.visit("/tickets");
     }, []);
     return null;
   }
+
+  const handlePayment = () => {
+    if (!ticket.snap_token) {
+      toast({
+        title: "Error",
+        description: "Token pembayaran tidak ditemukan",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsPaymentLoading(true);
+
+    window.snap.pay(ticket.snap_token, {
+      onSuccess: function(result) {
+        toast({
+          title: "Pembayaran Berhasil!",
+          description: "Terima kasih, tiket Anda sudah dikonfirmasi.",
+        });
+        router.reload();
+      },
+      onPending: function(result) {
+        toast({
+          title: "Menunggu Pembayaran",
+          description: "Silakan selesaikan pembayaran Anda.",
+        });
+        setIsPaymentLoading(false);
+      },
+      onError: function(result) {
+        toast({
+          title: "Pembayaran Gagal",
+          description: "Silakan coba lagi atau pilih metode pembayaran lain.",
+          variant: "destructive",
+        });
+        setIsPaymentLoading(false);
+      },
+      onClose: function() {
+        setIsPaymentLoading(false);
+      }
+    });
+  };
 
   return (
     <PublicLayout>
@@ -24,7 +69,9 @@ const TicketSuccess = ({ ticket }) => {
             </div>
             <h1 className="text-4xl font-bold text-foreground mb-2">Pemesanan Tiket Berhasil!</h1>
             <p className="text-muted-foreground">
-              Terima kasih atas pemesanan Anda. Simpan konfirmasi ini untuk ditunjukkan saat kunjungan.
+              {ticket.status === "pending" 
+                ? "Silakan selesaikan pembayaran untuk mengkonfirmasi tiket Anda."
+                : "Terima kasih atas pemesanan Anda. Simpan konfirmasi ini untuk ditunjukkan saat kunjungan."}
             </p>
           </div>
 
@@ -37,8 +84,15 @@ const TicketSuccess = ({ ticket }) => {
               </div>
               <div className="text-right">
                 <p className="text-sm text-muted-foreground mb-1">Status</p>
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                  {ticket.status === "confirmed" ? "Dikonfirmasi" : ticket.status}
+                <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                  ticket.status === "pending"
+                    ? "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400"
+                    : ticket.status === "confirmed" || ticket.status === "paid"
+                    ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
+                    : "bg-muted text-muted-foreground"
+                }`}>
+                  {ticket.status === "pending" ? "Menunggu Pembayaran" : 
+                   ticket.status === "confirmed" || ticket.status === "paid" ? "Dikonfirmasi" : ticket.status}
                 </span>
               </div>
             </div>
@@ -104,8 +158,20 @@ const TicketSuccess = ({ ticket }) => {
 
           {/* Actions */}
           <div className="flex flex-col sm:flex-row gap-4 mb-6">
+            {ticket.status === "pending" && ticket.snap_token && (
+              <Button
+                variant="heritage"
+                size="lg"
+                className="flex-1"
+                onClick={handlePayment}
+                disabled={isPaymentLoading}
+              >
+                <CreditCard className="w-4 h-4 mr-2" />
+                {isPaymentLoading ? "Memproses..." : "Bayar Sekarang"}
+              </Button>
+            )}
             <Button
-              variant="heritage"
+              variant={ticket.status === "pending" ? "outline" : "heritage"}
               size="lg"
               className="flex-1"
               onClick={() => router.visit("/tickets")}

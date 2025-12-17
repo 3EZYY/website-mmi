@@ -53,6 +53,26 @@ const Profile = ({ user, orders = [], tickets = [] }) => {
     }
   };
 
+  const handleDeleteTicket = (ticketId) => {
+    if (confirm("Apakah Anda yakin ingin menghapus tiket ini?")) {
+      router.delete(`/tickets/${ticketId}`, {
+        onSuccess: () => {
+          toast({
+            title: "Tiket Dihapus",
+            description: "Tiket berhasil dihapus",
+          });
+        },
+        onError: () => {
+          toast({
+            title: "Error",
+            description: "Gagal menghapus tiket",
+            variant: "destructive",
+          });
+        }
+      });
+    }
+  };
+
   const handleAvatarUpload = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -219,7 +239,7 @@ const Profile = ({ user, orders = [], tickets = [] }) => {
               ) : (
                 <div className="grid gap-4">
                   {orders.map((order) => (
-                    <Card key={order.id} className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-primary">
+                    <Card key={order.id} className="group hover:shadow-lg transition-all duration-300 border-l-4 border-l-primary">
                       <CardHeader className="pb-3">
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                           <div>
@@ -241,11 +261,11 @@ const Profile = ({ user, orders = [], tickets = [] }) => {
                       <CardContent className="space-y-4">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div className="space-y-1">
-                            <span className="text-xs font-medium text-muted-foreground uppercase">Payment Method</span>
+                            <span className="text-xs font-medium text-muted-foreground uppercase">Metode Pembayaran</span>
                             <p className="text-sm font-semibold capitalize">{order.payment_method}</p>
                           </div>
                           <div className="space-y-1">
-                            <span className="text-xs font-medium text-muted-foreground uppercase">Total Amount</span>
+                            <span className="text-xs font-medium text-muted-foreground uppercase">Total Harga</span>
                             <p className="text-lg font-bold text-primary">Rp {order.total_amount.toLocaleString('id-ID')}</p>
                           </div>
                         </div>
@@ -286,16 +306,18 @@ const Profile = ({ user, orders = [], tickets = [] }) => {
                         
                         {/* Delete Button for Pending Orders */}
                         {order.status === 'pending' && (
-                          <div className="pt-2">
-                            <Button 
-                              variant="destructive" 
-                              size="sm"
-                              onClick={() => handleDeleteOrder(order.id)}
-                              className="w-full sm:w-auto"
-                            >
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              Hapus Pesanan
-                            </Button>
+                          <div className="overflow-hidden max-h-0 group-hover:max-h-20 opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out">
+                            <div className="pt-2">
+                              <Button 
+                                variant="destructive" 
+                                size="sm"
+                                onClick={() => handleDeleteOrder(order.id)}
+                                className="w-full sm:w-auto"
+                              >
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Batalkan Pesanan
+                              </Button>
+                            </div>
                           </div>
                         )}
                       </CardContent>
@@ -322,7 +344,7 @@ const Profile = ({ user, orders = [], tickets = [] }) => {
               ) : (
                 <div className="grid gap-4">
                   {tickets.map((ticket) => (
-                    <Card key={ticket.id} className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-heritage">
+                    <Card key={ticket.id} className="group hover:shadow-lg transition-all duration-300 border-l-4 border-l-heritage">
                       <CardHeader className="pb-3">
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                           <div>
@@ -361,6 +383,23 @@ const Profile = ({ user, orders = [], tickets = [] }) => {
                             day: 'numeric' 
                           })}
                         </div>
+                        
+                        {/* Delete Button for Pending Tickets */}
+                        {ticket.status === 'pending' && (
+                          <div className="overflow-hidden max-h-0 group-hover:max-h-20 opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out">
+                            <div className="pt-2">
+                              <Button 
+                                variant="destructive" 
+                                size="sm"
+                                onClick={() => handleDeleteTicket(ticket.id)}
+                                className="w-full sm:w-auto"
+                              >
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Batalkan Tiket
+                              </Button>
+                            </div>
+                          </div>
+                        )}
                       </CardContent>
                     </Card>
                   ))}

@@ -38,6 +38,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::post('/profile/avatar', [PublicController::class, 'updateAvatar'])->name('profile.avatar');
     Route::delete('/orders/{order}', [PublicController::class, 'deleteOrder'])->name('orders.delete');
+    Route::delete('/tickets/{ticket}', [PublicController::class, 'deleteTicket'])->name('tickets.delete');
 });
 
 // Google OAuth Routes

@@ -112,10 +112,9 @@ class PublicController extends Controller
             'visit_date' => 'required|date|after_or_equal:today',
             'quantity' => 'required|integer|min:1|max:50',
             'total_price' => 'required|numeric|min:0',
-            'payment_method' => 'required|string|in:gopay,dana,qris,bca,ovo,shopeepay',
         ]);
 
-        // Create ticket record
+        // Create ticket record with pending status
         $ticket = Ticket::create([
             'user_id' => Auth::id(),
             'visitor_name' => $validated['visitor_name'],
@@ -124,13 +123,48 @@ class PublicController extends Controller
             'visit_date' => $validated['visit_date'],
             'quantity' => $validated['quantity'],
             'total_price' => $validated['total_price'],
-            'payment_method' => $validated['payment_method'],
-            'status' => 'confirmed',
+            'status' => 'pending',
+            'payment_status' => 'unpaid',
         ]);
 
-        // Return success page with ticket details
+        // Configure Midtrans
+        Config::$serverKey = config('midtrans.server_key');
+        Config::$isProduction = config('midtrans.is_production');
+        Config::$isSanitized = config('midtrans.is_sanitized');
+        Config::$is3ds = config('midtrans.is_3ds');
+
+        // Create transaction params for Midtrans
+        $params = [
+            'transaction_details' => [
+                'order_id' => 'TICKET-' . $ticket->id,
+                'gross_amount' => (int) $validated['total_price'],
+            ],
+            'customer_details' => [
+                'first_name' => $validated['visitor_name'],
+                'email' => $validated['email'],
+                'phone' => $validated['phone'],
+            ],
+            'item_details' => [
+                [
+                    'id' => 'ticket',
+                    'price' => (int) ($validated['total_price'] / $validated['quantity']),
+                    'quantity' => $validated['quantity'],
+                    'name' => 'Tiket Museum',
+                ],
+            ],
+        ];
+
+        // Generate Snap Token
+        $snapToken = Snap::getSnapToken($params);
+
+        // Save snap token to ticket
+        $ticket->snap_token = $snapToken;
+        $ticket->save();
+
+        // Return success page with ticket details and Midtrans client key
         return Inertia::render('Tickets/TicketSuccess', [
-            'ticket' => $ticket
+            'ticket' => $ticket,
+            'clientKey' => config('midtrans.client_key'),
         ]);
     }
 
@@ -235,6 +269,21 @@ class PublicController extends Controller
         $order->delete();
 
         return redirect()->route('profile')->with('success', 'Pesanan berhasil dihapus');
+    }
+
+    /**
+     * Delete a pending ticket
+     */
+    public function deleteTicket(string $id)
+    {
+        $ticket = Ticket::where('id', $id)
+            ->where('user_id', Auth::id())
+            ->where('status', 'pending')
+            ->firstOrFail();
+
+        $ticket->delete();
+
+        return redirect()->route('profile')->with('success', 'Tiket berhasil dihapus');
     }
 
     /**
