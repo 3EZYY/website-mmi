@@ -21,10 +21,12 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
         ]);
 
-        // Seed News (10 articles)
-        \App\Models\News::factory(10)->create();
-
-        // Seed Souvenirs (10 items)
-        \App\Models\Souvenir::factory(10)->create();
+        // Call seeders
+        $this->call([
+            AdminSeeder::class,
+            NewsSeeder::class,
+            SouvenirSeeder::class,
+            CollectionSeeder::class,
+        ]);
     }
 }

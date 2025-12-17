@@ -45,12 +45,20 @@ class PublicController extends Controller
     /**
      * Display collections gallery page
      */
-    public function collections(): Response
+    public function collections(Request $request): Response
     {
-        $collections = MusicCollection::orderBy('created_at', 'desc')->get();
+        $category = $request->query('category');
+
+        $collections = MusicCollection::query()
+            ->when($category, function ($query, $category) {
+                $query->where('category', $category);
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         return Inertia::render('Collections/CollectionsGallery', [
-            'collections' => $collections
+            'collections' => $collections,
+            'currentFilter' => $category ?? 'all',
         ]);
     }
 

@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Head } from "@inertiajs/react";
+import { Head, router } from "@inertiajs/react";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Music, Calendar } from "lucide-react";
 import PublicLayout from "@/Layouts/PublicLayout";
 import {
@@ -11,8 +12,22 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-const CollectionsGallery = ({ collections = [] }) => {
+const CollectionsGallery = ({ collections = [], currentFilter = 'all' }) => {
   const [selectedCollection, setSelectedCollection] = useState(null);
+
+  const filters = [
+    { key: 'all', label: 'Semua Koleksi' },
+    { key: 'Traditional', label: 'Tradisional' },
+    { key: 'Modern', label: 'Modern' },
+  ];
+
+  const handleFilter = (category) => {
+    const url = category === 'all' ? '/collections' : `/collections?category=${category}`;
+    router.get(url, {}, {
+      preserveState: true,
+      preserveScroll: true,
+    });
+  };
 
   return (
     <PublicLayout>
@@ -24,9 +39,27 @@ const CollectionsGallery = ({ collections = [] }) => {
             <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
               Galeri Koleksi Alat Musik
             </h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
               Jelajahi koleksi alat musik tradisional dan modern dari seluruh nusantara
             </p>
+
+            {/* Filter Buttons */}
+            <div className="flex flex-wrap justify-center gap-3">
+              {filters.map((filter) => (
+                <Button
+                  key={filter.key}
+                  variant={currentFilter === filter.key ? "default" : "outline"}
+                  onClick={() => handleFilter(filter.key)}
+                  className={`transition-all duration-300 ${
+                    currentFilter === filter.key
+                      ? "bg-primary text-primary-foreground shadow-lg scale-105"
+                      : "hover:bg-primary/10"
+                  }`}
+                >
+                  {filter.label}
+                </Button>
+              ))}
+            </div>
           </div>
 
           {collections.length === 0 ? (

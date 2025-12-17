@@ -104,7 +104,8 @@ All colors MUST be HSL.
     @apply border-border;
   }
 
-  body {
+  /* Only apply these styles to the Inertia frontend, not Filament */
+  body.inertia-app {
     @apply bg-background text-foreground;
   }
 

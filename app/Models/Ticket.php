@@ -5,6 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
+/**
+ * @mixin IdeHelperTicket
+ */
 class Ticket extends Model
 {
     use HasUuids;

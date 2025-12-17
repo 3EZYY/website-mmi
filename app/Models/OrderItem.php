@@ -5,6 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
+/**
+ * @mixin IdeHelperOrderItem
+ */
 class OrderItem extends Model
 {
     use HasUuids;
