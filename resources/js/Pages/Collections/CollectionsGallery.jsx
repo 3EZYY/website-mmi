@@ -18,11 +18,7 @@ const CollectionsGallery = ({ collections = [] }) => {
     <PublicLayout>
       <Head title="Galeri Koleksi Alat Musik" />
 
-<<<<<<< HEAD
-      <main className="flex-1 pt-40 pb-16 bg-muted/30">
-=======
       <main className="flex-1 pt-32 pb-16 bg-muted/30">
->>>>>>> feature/3-homepage-layout
         <div className="container mx-auto px-6">
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
