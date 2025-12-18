@@ -60,10 +60,10 @@ const NewsDetail = ({ news }) => {
           {/* Article */}
           <Card className="overflow-hidden bg-card border-border">
             {/* Featured Image */}
-            {news.image_url && (
+            {news.thumbnail && (
               <div className="w-full h-96 overflow-hidden bg-gradient-accent">
                 <img
-                  src={news.image_url}
+                  src={news.thumbnail}
                   alt={news.title}
                   className="w-full h-full object-cover"
                 />

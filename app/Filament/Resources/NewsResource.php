@@ -21,22 +21,46 @@ class NewsResource extends Resource
 
     protected static ?string $navigationGroup = 'Content';
 
+    protected static ?string $modelLabel = 'Berita';
+
+    protected static ?string $pluralModelLabel = 'Berita';
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('title')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('slug')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\Textarea::make('excerpt')
-                    ->required()
-                    ->columnSpanFull(),
-                Forms\Components\RichEditor::make('content')
-                    ->required()
-                    ->columnSpanFull(),
+                Forms\Components\Section::make('Informasi Berita')
+                    ->schema([
+                        Forms\Components\TextInput::make('title')
+                            ->label('Judul')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('slug')
+                            ->label('Slug')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('category')
+                            ->label('Kategori')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('author')
+                            ->label('Penulis')
+                            ->required()
+                            ->maxLength(255),
+                    ])
+                    ->columns(2),
+
+                Forms\Components\Section::make('Konten')
+                    ->schema([
+                        Forms\Components\Textarea::make('excerpt')
+                            ->label('Ringkasan')
+                            ->required()
+                            ->columnSpanFull(),
+                        Forms\Components\RichEditor::make('content')
+                            ->label('Isi Berita')
+                            ->required()
+                            ->columnSpanFull(),
+                    ]),
 
                 // Hybrid Image Section
                 Forms\Components\Section::make('Gambar')
@@ -47,29 +71,31 @@ class NewsResource extends Resource
                             ->image()
                             ->disk('public')
                             ->directory('news-images')
-                            ->acceptedFileTypes(['image/jpeg', 'image/webp'])
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                             ->maxSize(2048)
-                            ->imageEditor()
-                            ->imageEditorAspectRatios(['16:9'])
-                            ->helperText('Format: .jpg/.webp | Max: 2MB | Rekomendasi: Rasio 16:9')
-                            ->requiredWithout('image_url'),
+                            ->helperText('Format: .jpg/.png/.webp | Max: 2MB | Rekomendasi: Rasio 16:9')
+                            ->deletable(true)
+                            ->openable(true)
+                            ->downloadable(true)
+                            ->previewable(true)
+                            ->nullable(),
                         Forms\Components\TextInput::make('image_url')
                             ->label('Atau Paste URL Gambar')
                             ->url()
                             ->helperText('Alternatif: Paste link gambar dari internet')
                             ->requiredWithout('image'),
                     ])
-                    ->columns(1)
-                    ->columnSpanFull(),
-                Forms\Components\TextInput::make('category')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('author')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\DateTimePicker::make('published_at'),
-                Forms\Components\Toggle::make('is_published')
-                    ->required(),
+                    ->columns(1),
+
+                Forms\Components\Section::make('Pengaturan Publikasi')
+                    ->schema([
+                        Forms\Components\DateTimePicker::make('published_at')
+                            ->label('Tanggal Publikasi'),
+                        Forms\Components\Toggle::make('is_published')
+                            ->label('Dipublikasikan')
+                            ->required(),
+                    ])
+                    ->columns(2),
             ]);
     }
 
@@ -79,31 +105,36 @@ class NewsResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('id')
                     ->label('ID')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('title')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('slug')
-                    ->searchable(),
+                    ->label('Judul')
+                    ->searchable()
+                    ->limit(40),
                 Tables\Columns\TextColumn::make('category')
+                    ->label('Kategori')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('author')
+                    ->label('Penulis')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('published_at')
-                    ->dateTime()
+                    ->label('Tanggal Publikasi')
+                    ->dateTime('d M Y')
                     ->sortable(),
                 Tables\Columns\IconColumn::make('is_published')
+                    ->label('Dipublikasikan')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Dibuat')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\TernaryFilter::make('is_published')
+                    ->label('Status Publikasi')
+                    ->trueLabel('Dipublikasikan')
+                    ->falseLabel('Draft'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

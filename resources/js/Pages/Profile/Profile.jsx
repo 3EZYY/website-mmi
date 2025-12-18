@@ -279,9 +279,9 @@ const Profile = ({ user, orders = [], tickets = [] }) => {
                               {order.order_items.map((item, index) => (
                                 <div key={index} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                                   <div className="flex items-center gap-3">
-                                    {item.souvenirs?.image_url && (
+                                    {item.souvenirs?.thumbnail && (
                                       <img 
-                                        src={item.souvenirs.image_url} 
+                                        src={item.souvenirs.thumbnail} 
                                         alt={item.souvenirs?.name} 
                                         className="w-12 h-12 object-cover rounded"
                                       />

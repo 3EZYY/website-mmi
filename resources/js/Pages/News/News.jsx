@@ -70,9 +70,9 @@ const News = ({ news = [] }) => {
                 >
                   {/* Image */}
                   <div className="relative h-48 overflow-hidden bg-gradient-accent">
-                    {item.image_url ? (
+                    {item.thumbnail ? (
                       <img
-                        src={item.image_url}
+                        src={item.thumbnail}
                         alt={item.title}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                       />

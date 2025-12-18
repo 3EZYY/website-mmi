@@ -268,7 +268,11 @@ class PublicController extends Controller
         $order = \App\Models\Order::where('id', $id)
             ->where('user_id', Auth::id())
             ->where('status', 'pending')
-            ->firstOrFail();
+            ->first();
+
+        if (!$order) {
+            return back()->withErrors(['error' => 'Pesanan tidak ditemukan atau tidak dapat dihapus']);
+        }
 
         // Delete order items first
         $order->orderItems()->delete();
@@ -276,7 +280,7 @@ class PublicController extends Controller
         // Delete the order
         $order->delete();
 
-        return redirect()->route('profile')->with('success', 'Pesanan berhasil dihapus');
+        return to_route('profile')->with('success', 'Pesanan berhasil dihapus');
     }
 
     /**
@@ -287,11 +291,15 @@ class PublicController extends Controller
         $ticket = Ticket::where('id', $id)
             ->where('user_id', Auth::id())
             ->where('status', 'pending')
-            ->firstOrFail();
+            ->first();
+
+        if (!$ticket) {
+            return back()->withErrors(['error' => 'Tiket tidak ditemukan atau tidak dapat dihapus']);
+        }
 
         $ticket->delete();
 
-        return redirect()->route('profile')->with('success', 'Tiket berhasil dihapus');
+        return to_route('profile')->with('success', 'Tiket berhasil dihapus');
     }
 
     /**

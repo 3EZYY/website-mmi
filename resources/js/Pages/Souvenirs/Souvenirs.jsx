@@ -76,9 +76,9 @@ const Souvenirs = ({ souvenirs = [], auth }) => {
                 {souvenirs.map((souvenir) => (
                   <Card key={souvenir.id} className="overflow-hidden bg-card border-border group hover:shadow-medium transition-all duration-300 hover:-translate-y-1">
                     <div className="relative h-72 bg-gradient-accent overflow-hidden">
-                      {souvenir.image_url ? (
+                      {souvenir.thumbnail ? (
                         <img
-                          src={souvenir.image_url}
+                          src={souvenir.thumbnail}
                           alt={souvenir.name}
                           className="w-full h-full object-cover group-hover:scale-110 transition-all duration-500"
                         />

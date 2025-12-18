@@ -76,9 +76,9 @@ const CollectionsGallery = ({ collections = [], currentFilter = 'all' }) => {
                   onClick={() => setSelectedCollection(collection)}
                 >
                   <div className="h-64 bg-gradient-accent overflow-hidden">
-                    {collection.image_url ? (
+                    {collection.thumbnail ? (
                       <img
-                        src={collection.image_url}
+                        src={collection.thumbnail}
                         alt={collection.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-smooth"
                       />
@@ -136,10 +136,10 @@ const CollectionsGallery = ({ collections = [], currentFilter = 'all' }) => {
 
           {selectedCollection && (
             <div className="space-y-4">
-              {selectedCollection.image_url && (
+              {selectedCollection.thumbnail && (
                 <div className="w-full h-96 rounded-lg overflow-hidden">
                   <img
-                    src={selectedCollection.image_url}
+                    src={selectedCollection.thumbnail}
                     alt={selectedCollection.name}
                     className="w-full h-full object-cover"
                   />

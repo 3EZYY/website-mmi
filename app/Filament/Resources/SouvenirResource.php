@@ -21,16 +21,23 @@ class SouvenirResource extends Resource
 
     protected static ?string $navigationGroup = 'Museum Management';
 
+    protected static ?string $modelLabel = 'Souvenir';
+
+    protected static ?string $pluralModelLabel = 'Souvenir';
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
+                    ->label('Nama')
                     ->required()
                     ->maxLength(255),
                 Forms\Components\Textarea::make('description')
+                    ->label('Deskripsi')
                     ->columnSpanFull(),
                 Forms\Components\TextInput::make('price')
+                    ->label('Harga')
                     ->required()
                     ->numeric()
                     ->prefix('Rp'),
@@ -44,12 +51,14 @@ class SouvenirResource extends Resource
                             ->image()
                             ->disk('public')
                             ->directory('souvenir-images')
-                            ->acceptedFileTypes(['image/jpeg', 'image/webp'])
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                             ->maxSize(2048)
-                            ->imageEditor()
-                            ->imageEditorAspectRatios(['1:1'])
-                            ->helperText('Format: .jpg/.webp | Max: 2MB | Rekomendasi: Rasio 1:1')
-                            ->requiredWithout('image_url'),
+                            ->helperText('Format: .jpg/.png/.webp | Max: 2MB | Rekomendasi: Rasio 1:1')
+                            ->deletable(true)
+                            ->openable(true)
+                            ->downloadable(true)
+                            ->previewable(true)
+                            ->nullable(),
                         Forms\Components\TextInput::make('image_url')
                             ->label('Atau Paste URL Gambar')
                             ->url()
@@ -59,9 +68,11 @@ class SouvenirResource extends Resource
                     ->columns(1)
                     ->columnSpanFull(),
                 Forms\Components\TextInput::make('category')
+                    ->label('Kategori')
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('stock')
+                    ->label('Stok')
                     ->required()
                     ->numeric()
                     ->default(0),
@@ -74,22 +85,29 @@ class SouvenirResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('id')
                     ->label('ID')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('name')
+                    ->label('Nama')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('price')
-                    ->money()
+                    ->label('Harga')
+                    ->formatStateUsing(fn($state) => 'Rp ' . number_format($state, 0, ',', '.'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('category')
+                    ->label('Kategori')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('stock')
+                    ->label('Stok')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('Dibuat')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Diperbarui')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

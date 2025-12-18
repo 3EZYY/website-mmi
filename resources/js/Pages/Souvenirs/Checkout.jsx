@@ -113,10 +113,10 @@ const Checkout = ({ cart, souvenirs, auth }) => {
                                         className="flex gap-4"
                                     >
                                         <div className="w-20 h-20 bg-gradient-accent rounded-lg overflow-hidden flex-shrink-0">
-                                            {item.souvenir?.image_url ? (
+                                            {item.souvenir?.thumbnail ? (
                                                 <img
                                                     src={
-                                                        item.souvenir.image_url
+                                                        item.souvenir.thumbnail
                                                     }
                                                     alt={item.souvenir.name}
                                                     className="w-full h-full object-cover"

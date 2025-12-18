@@ -1,0 +1,703 @@
+{
+  "info": {
+    "_postman_id": "mmi-website-collection-2024",
+    "name": "MMI Website API Collection",
+    "description": "Complete API collection for Museum Musik Indonesia (MMI) Website.\n\n## Important Notes\n- This is a Laravel + Inertia.js application, most routes return HTML/Inertia responses\n- For POST requests, you may need CSRF token handling\n- Set `base_url` variable in Postman environment\n\n## CSRF Token Setup (for Web Routes)\n1. First call GET {{base_url}}/sanctum/csrf-cookie (if using Sanctum)\n2. Or manually get XSRF-TOKEN from browser cookies\n3. Add header: X-XSRF-TOKEN: [token_value]",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000",
+      "type": "string"
+    },
+    {
+      "key": "midtrans_server_key",
+      "value": "YOUR_MIDTRANS_SERVER_KEY",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "🔐 Authentication",
+      "description": "Laravel Breeze authentication endpoints",
+      "item": [
+        {
+          "name": "Login Page",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "text/html"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/login",
+              "host": ["{{base_url}}"],
+              "path": ["login"]
+            }
+          }
+        },
+        {
+          "name": "Login (Submit)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-XSRF-TOKEN",
+                "value": "{{xsrf_token}}",
+                "description": "Get this from cookies after visiting any page"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@mmi.test\",\n  \"password\": \"password\",\n  \"remember\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/login",
+              "host": ["{{base_url}}"],
+              "path": ["login"]
+            }
+          }
+        },
+        {
+          "name": "Register Page",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/register",
+              "host": ["{{base_url}}"],
+              "path": ["register"]
+            }
+          }
+        },
+        {
+          "name": "Register (Submit)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-XSRF-TOKEN",
+                "value": "{{xsrf_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"testuser@example.com\",\n  \"password\": \"password123\",\n  \"password_confirmation\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/register",
+              "host": ["{{base_url}}"],
+              "path": ["register"]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-XSRF-TOKEN",
+                "value": "{{xsrf_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/logout",
+              "host": ["{{base_url}}"],
+              "path": ["logout"]
+            }
+          }
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/forgot-password",
+              "host": ["{{base_url}}"],
+              "path": ["forgot-password"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🌐 Public Pages",
+      "description": "Public content pages (no auth required)",
+      "item": [
+        {
+          "name": "Home Page",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/",
+              "host": ["{{base_url}}"],
+              "path": [""]
+            }
+          }
+        },
+        {
+          "name": "News List",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/news",
+              "host": ["{{base_url}}"],
+              "path": ["news"]
+            }
+          }
+        },
+        {
+          "name": "News Detail",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/news/:id",
+              "host": ["{{base_url}}"],
+              "path": ["news", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "news-uuid-here",
+                  "description": "News UUID"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Collections Gallery",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/collections",
+              "host": ["{{base_url}}"],
+              "path": ["collections"]
+            }
+          }
+        },
+        {
+          "name": "Collections Gallery (Filtered)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/collections?category=Traditional",
+              "host": ["{{base_url}}"],
+              "path": ["collections"],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "Traditional",
+                  "description": "Filter: Traditional or Modern"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Souvenirs Shop",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/souvenirs",
+              "host": ["{{base_url}}"],
+              "path": ["souvenirs"]
+            }
+          }
+        },
+        {
+          "name": "Tickets Page",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/tickets",
+              "host": ["{{base_url}}"],
+              "path": ["tickets"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🎫 Ticket Transactions",
+      "description": "Ticket booking endpoints",
+      "item": [
+        {
+          "name": "Submit Ticket Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-XSRF-TOKEN",
+                "value": "{{xsrf_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"visitor_name\": \"Budi Santoso\",\n  \"email\": \"budi@example.com\",\n  \"phone\": \"081234567890\",\n  \"visit_date\": \"2024-12-25\",\n  \"quantity\": 2,\n  \"total_price\": 10000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/tickets",
+              "host": ["{{base_url}}"],
+              "path": ["tickets"]
+            },
+            "description": "## Validation Rules\n- `visitor_name`: required, string, min:3, max:255\n- `email`: required, valid email, max:255\n- `phone`: required, string, min:10, max:20\n- `visit_date`: required, date, must be today or future\n- `quantity`: required, integer, min:1, max:50\n- `total_price`: required, numeric, min:0\n\n## Note\nRequires authentication. Response includes Midtrans snap_token for payment."
+          }
+        },
+        {
+          "name": "Delete Ticket (Auth Required)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-XSRF-TOKEN",
+                "value": "{{xsrf_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/tickets/:ticket",
+              "host": ["{{base_url}}"],
+              "path": ["tickets", ":ticket"],
+              "variable": [
+                {
+                  "key": "ticket",
+                  "value": "ticket-uuid-here",
+                  "description": "Ticket UUID (must be pending status)"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🛒 Souvenir Checkout",
+      "description": "Souvenir order endpoints",
+      "item": [
+        {
+          "name": "Get Checkout Page",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/checkout?cart[souvenir-uuid-1]=2&cart[souvenir-uuid-2]=1",
+              "host": ["{{base_url}}"],
+              "path": ["checkout"],
+              "query": [
+                {
+                  "key": "cart[souvenir-uuid-1]",
+                  "value": "2",
+                  "description": "Souvenir ID => Quantity"
+                },
+                {
+                  "key": "cart[souvenir-uuid-2]",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Submit Souvenir Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-XSRF-TOKEN",
+                "value": "{{xsrf_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"081234567890\",\n  \"shipping_address\": \"Budi Santoso, Jl. Malang No. 123, Malang, Jawa Timur 65111\",\n  \"payment_method\": \"qris\",\n  \"total_amount\": 150000,\n  \"order_items\": [\n    {\n      \"souvenir_id\": \"souvenir-uuid-here\",\n      \"quantity\": 2,\n      \"price\": 50000\n    },\n    {\n      \"souvenir_id\": \"another-souvenir-uuid\",\n      \"quantity\": 1,\n      \"price\": 50000\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/checkout",
+              "host": ["{{base_url}}"],
+              "path": ["checkout"]
+            },
+            "description": "## Validation Rules\n- `phone`: required, string, max:20\n- `shipping_address`: required, string, max:500\n- `payment_method`: required, one of: gopay, dana, qris, bca, ovo, shopeepay\n- `total_amount`: required, integer, min:0\n- `order_items`: required, array, min:1 item\n- `order_items.*.souvenir_id`: required, valid UUID, must exist in souvenirs table\n- `order_items.*.quantity`: required, integer, min:1\n- `order_items.*.price`: required, integer, min:0\n\n## Note\nRequires authentication. Response includes Midtrans snap_token for payment."
+          }
+        },
+        {
+          "name": "Delete Order (Auth Required)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-XSRF-TOKEN",
+                "value": "{{xsrf_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/orders/:order",
+              "host": ["{{base_url}}"],
+              "path": ["orders", ":order"],
+              "variable": [
+                {
+                  "key": "order",
+                  "value": "order-uuid-here",
+                  "description": "Order UUID (must be pending status)"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "👤 User Profile",
+      "description": "Profile management endpoints (Auth Required)",
+      "item": [
+        {
+          "name": "Get Profile Page",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/profile",
+              "host": ["{{base_url}}"],
+              "path": ["profile"]
+            },
+            "description": "Returns user profile with orders and tickets history"
+          }
+        },
+        {
+          "name": "Update Avatar",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-XSRF-TOKEN",
+                "value": "{{xsrf_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "avatar",
+                  "type": "file",
+                  "description": "Image file (jpeg, png, jpg, gif, webp). Max 200KB"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/profile/avatar",
+              "host": ["{{base_url}}"],
+              "path": ["profile", "avatar"]
+            }
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-XSRF-TOKEN",
+                "value": "{{xsrf_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Name\",\n  \"email\": \"newemail@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/profile",
+              "host": ["{{base_url}}"],
+              "path": ["profile"]
+            }
+          }
+        },
+        {
+          "name": "Update Password",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-XSRF-TOKEN",
+                "value": "{{xsrf_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"current_password\": \"oldpassword\",\n  \"password\": \"newpassword123\",\n  \"password_confirmation\": \"newpassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/password",
+              "host": ["{{base_url}}"],
+              "path": ["password"]
+            }
+          }
+        },
+        {
+          "name": "Delete Account",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-XSRF-TOKEN",
+                "value": "{{xsrf_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"password\": \"your-current-password\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/profile",
+              "host": ["{{base_url}}"],
+              "path": ["profile"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "💳 Midtrans Direct API",
+      "description": "Direct Midtrans API calls for testing (bypass Laravel)",
+      "item": [
+        {
+          "name": "Create Snap Token",
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{midtrans_server_key}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"transaction_details\": {\n    \"order_id\": \"TEST-ORDER-001\",\n    \"gross_amount\": 50000\n  },\n  \"customer_details\": {\n    \"first_name\": \"Budi\",\n    \"last_name\": \"Test\",\n    \"email\": \"budi@example.com\",\n    \"phone\": \"081234567890\"\n  },\n  \"item_details\": [\n    {\n      \"id\": \"ITEM-001\",\n      \"price\": 25000,\n      \"quantity\": 2,\n      \"name\": \"Test Souvenir\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://app.sandbox.midtrans.com/snap/v1/transactions",
+              "protocol": "https",
+              "host": ["app", "sandbox", "midtrans", "com"],
+              "path": ["snap", "v1", "transactions"]
+            },
+            "description": "## Create Snap Token directly from Midtrans\n\nSet your Server Key in the collection variable `midtrans_server_key`.\n\n### Response Example\n```json\n{\n  \"token\": \"66e4fa55-fdac-4ef9-91b5-733b97d1b862\",\n  \"redirect_url\": \"https://app.sandbox.midtrans.com/snap/v2/vtweb/66e4fa55...\"\n}\n```"
+          }
+        },
+        {
+          "name": "Check Transaction Status",
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{midtrans_server_key}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "https://api.sandbox.midtrans.com/v2/:order_id/status",
+              "protocol": "https",
+              "host": ["api", "sandbox", "midtrans", "com"],
+              "path": ["v2", ":order_id", "status"],
+              "variable": [
+                {
+                  "key": "order_id",
+                  "value": "TEST-ORDER-001",
+                  "description": "Order ID from previous transaction"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Simulate Webhook Notification",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"transaction_time\": \"2024-12-18 13:00:00\",\n  \"transaction_status\": \"settlement\",\n  \"transaction_id\": \"midtrans-txn-id-123\",\n  \"status_message\": \"midtrans payment notification\",\n  \"status_code\": \"200\",\n  \"signature_key\": \"generate-using-sha512\",\n  \"payment_type\": \"qris\",\n  \"order_id\": \"TICKET-uuid-here\",\n  \"merchant_id\": \"your-merchant-id\",\n  \"gross_amount\": \"50000.00\",\n  \"fraud_status\": \"accept\",\n  \"currency\": \"IDR\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/midtrans/callback",
+              "host": ["{{base_url}}"],
+              "path": ["midtrans", "callback"]
+            },
+            "description": "## Midtrans Webhook Simulation\n\n**Note**: You need to create this route in your Laravel app if it doesn't exist.\n\n### Signature Key Generation\nThe signature_key is calculated as:\n```\nSHA512(order_id + status_code + gross_amount + ServerKey)\n```\n\n### Transaction Status Values\n- `capture` - Card payment captured\n- `settlement` - Transaction settled\n- `pending` - Waiting for payment\n- `deny` - Payment denied\n- `cancel` - Transaction cancelled\n- `expire` - Transaction expired\n- `refund` - Transaction refunded"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔗 OAuth",
+      "description": "Social authentication endpoints",
+      "item": [
+        {
+          "name": "Google OAuth Redirect",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/google",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "google"]
+            },
+            "description": "Redirects to Google OAuth login page"
+          }
+        }
+      ]
+    }
+  ]
+}

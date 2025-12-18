@@ -103,9 +103,9 @@ const OrderSuccess = ({ order, clientKey }) => {
                 {order.order_items.map((item) => (
                   <div key={item.id} className="flex gap-4">
                     <div className="w-16 h-16 bg-gradient-accent rounded-lg overflow-hidden flex-shrink-0">
-                      {item.souvenirs.image_url ? (
+                      {item.souvenirs.thumbnail ? (
                         <img
-                          src={item.souvenirs.image_url}
+                          src={item.souvenirs.thumbnail}
                           alt={item.souvenirs.name}
                           className="w-full h-full object-cover"
                         />

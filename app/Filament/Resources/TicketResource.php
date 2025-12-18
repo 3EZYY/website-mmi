@@ -21,47 +21,84 @@ class TicketResource extends Resource
 
     protected static ?string $navigationGroup = 'Museum Management';
 
+    protected static ?string $modelLabel = 'Tiket';
+
+    protected static ?string $pluralModelLabel = 'Tiket';
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('user_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('visitor_name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('email')
-                    ->email()
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('phone')
-                    ->tel()
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\DatePicker::make('visit_date')
-                    ->required(),
-                Forms\Components\TextInput::make('quantity')
-                    ->required()
-                    ->numeric()
-                    ->default(1),
-                Forms\Components\TextInput::make('total_price')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('status')
-                    ->required()
-                    ->maxLength(255)
-                    ->default('pending'),
-                Forms\Components\TextInput::make('payment_method')
-                    ->required()
-                    ->maxLength(255)
-                    ->default('gopay'),
-                Forms\Components\TextInput::make('payment_status')
-                    ->required()
-                    ->maxLength(255)
-                    ->default('pending'),
-                Forms\Components\TextInput::make('payment_type')
-                    ->maxLength(255),
+                Forms\Components\Section::make('Informasi Pengunjung')
+                    ->schema([
+                        Forms\Components\TextInput::make('visitor_name')
+                            ->label('Nama Pengunjung')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('email')
+                            ->label('Email')
+                            ->email()
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('phone')
+                            ->label('Telepon')
+                            ->tel()
+                            ->required()
+                            ->maxLength(255),
+                    ])
+                    ->columns(2),
+
+                Forms\Components\Section::make('Detail Kunjungan')
+                    ->schema([
+                        Forms\Components\DatePicker::make('visit_date')
+                            ->label('Tanggal Kunjungan')
+                            ->required(),
+                        Forms\Components\TextInput::make('quantity')
+                            ->label('Jumlah Tiket')
+                            ->required()
+                            ->numeric()
+                            ->default(1),
+                        Forms\Components\TextInput::make('total_price')
+                            ->label('Total Harga')
+                            ->required()
+                            ->numeric()
+                            ->prefix('Rp'),
+                    ])
+                    ->columns(3),
+
+                Forms\Components\Section::make('Status Pembayaran')
+                    ->schema([
+                        Forms\Components\Select::make('status')
+                            ->label('Status Tiket')
+                            ->options([
+                                'pending' => 'Menunggu',
+                                'confirmed' => 'Terkonfirmasi',
+                                'cancelled' => 'Dibatalkan',
+                            ])
+                            ->default('pending')
+                            ->required(),
+                        Forms\Components\Select::make('payment_status')
+                            ->label('Status Pembayaran')
+                            ->options([
+                                'unpaid' => 'Belum Bayar',
+                                'paid' => 'Sudah Bayar',
+                                'failed' => 'Gagal',
+                            ])
+                            ->default('unpaid')
+                            ->required(),
+                        Forms\Components\Select::make('payment_method')
+                            ->label('Metode Pembayaran')
+                            ->options([
+                                'gopay' => 'GoPay',
+                                'dana' => 'DANA',
+                                'ovo' => 'OVO',
+                                'shopeepay' => 'ShopeePay',
+                                'qris' => 'QRIS',
+                                'bca' => 'Transfer BCA',
+                            ])
+                            ->default('gopay'),
+                    ])
+                    ->columns(3),
             ]);
     }
 
@@ -71,44 +108,64 @@ class TicketResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('id')
                     ->label('ID')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('user_id')
-                    ->numeric()
-                    ->sortable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('visitor_name')
+                    ->label('Nama Pengunjung')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
+                    ->label('Email')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('phone')
+                    ->label('Telepon')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('visit_date')
-                    ->date()
+                    ->label('Tanggal Kunjungan')
+                    ->date('d M Y')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('quantity')
+                    ->label('Jumlah')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('total_price')
-                    ->numeric()
+                    ->label('Total Harga')
+                    ->formatStateUsing(fn($state) => 'Rp ' . number_format($state, 0, ',', '.'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('status')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('payment_method')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('payment_status')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('payment_type')
-                    ->searchable(),
+                Tables\Columns\BadgeColumn::make('status')
+                    ->label('Status')
+                    ->colors([
+                        'warning' => 'pending',
+                        'success' => 'confirmed',
+                        'danger' => 'cancelled',
+                    ]),
+                Tables\Columns\BadgeColumn::make('payment_status')
+                    ->label('Pembayaran')
+                    ->colors([
+                        'warning' => 'unpaid',
+                        'success' => 'paid',
+                        'danger' => 'failed',
+                    ]),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Dibuat')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('status')
+                    ->label('Status')
+                    ->options([
+                        'pending' => 'Menunggu',
+                        'confirmed' => 'Terkonfirmasi',
+                        'cancelled' => 'Dibatalkan',
+                    ]),
+                Tables\Filters\SelectFilter::make('payment_status')
+                    ->label('Pembayaran')
+                    ->options([
+                        'unpaid' => 'Belum Bayar',
+                        'paid' => 'Sudah Bayar',
+                        'failed' => 'Gagal',
+                    ]),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
